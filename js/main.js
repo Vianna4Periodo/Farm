@@ -21,14 +21,23 @@ var GameState = {
     //criar os elementos
     create: function () {
 
-        var animalDate = [
+        this.background = this.game.add.sprite(0, 0, 'background');
+
+        var animalData = [
             {key: 'chicken', text: 'CHICKEN'},
             {key: 'horse', text: 'HORSE'},
             {key: 'pig', text: 'PIG'},
-            {key: 'sheep', text: 'SHEEP'},
+            {key: 'sheep', text: 'SHEEP'}
         ];
 
-        this.background = this.game.add.sprite(0, 0, 'background');
+        this.animals = this.game.add.group();
+        var self = this;
+
+        animalData.forEach(function(element) {
+            self.animals.create(200, self.game.world.centerY, element.key);
+        });
+
+
         // this.chicken = this.game.add.sprite(0, -50, 'chicken');
         // this.horse = this.game.add.sprite(500, 200, 'horse');
         // this.pig = this.game.add.sprite(300, 200, 'pig');
