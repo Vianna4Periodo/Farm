@@ -1,4 +1,11 @@
 var GameState = {
+
+    init: function () {
+        this.scale.scaleMode = Phaser.ScaleManager.NO_SCALE;
+        this.scale.pageAlignHorizontally = true;
+        this.scale.pageAlignVertically = true;
+    },
+
     //carregar os assets
     preload: function () {
         this.load.image('background', 'assets/images/background.png');
@@ -31,9 +38,9 @@ var GameState = {
 
     //atualizar
     update: function () {
-        this.sheep.angle += 22;
-        this.pig.angle -= 22;
-        this.horse.angle -= 30;
+        // this.sheep.angle += 22;
+        // this.pig.angle -= 22;
+        // this.horse.angle -= 30;
 
     }
 };
