@@ -20,6 +20,14 @@ var GameState = {
 
     //criar os elementos
     create: function () {
+
+        var animalDate = [
+            {key: 'chicken', text: 'CHICKEN'},
+            {key: 'horse', text: 'HORSE'},
+            {key: 'pig', text: 'PIG'},
+            {key: 'sheep', text: 'SHEEP'},
+        ];
+
         this.background = this.game.add.sprite(0, 0, 'background');
         // this.chicken = this.game.add.sprite(0, -50, 'chicken');
         // this.horse = this.game.add.sprite(500, 200, 'horse');
