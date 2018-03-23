@@ -1,92 +1,128 @@
 var GameState = {
 
     init: function () {
-        this.scale.scaleMode = Phaser.ScaleManager.NO_SCALE;
+        this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
         this.scale.pageAlignHorizontally = true;
         this.scale.pageAlignVertically = true;
-        this.isRotate = false;
     },
 
-    //carregar os assets
     preload: function () {
-        this.load.image('background', 'assets/images/background.png');
-        this.load.image('chicken', 'assets/images/chicken.png');
-        this.load.image('horse', 'assets/images/horse.png');
-        this.load.image('pig', 'assets/images/pig.png');
-        this.load.image('sheep', 'assets/images/sheep.png');
-
-        this.load.image('arrow', 'assets/images/arrow.png');
+        this.load.image('background','assets/images/background.png');
+        this.load.image('chicken','assets/images/chicken.png');
+        this.load.image('horse','assets/images/horse.png');
+        this.load.image('pig','assets/images/pig.png');
+        this.load.image('sheep','assets/images/sheep.png');
+        this.load.image('arrow','assets/images/arrow.png')
     },
 
-    //criar os elementos
     create: function () {
+        this.background = this.game.add.sprite(0, 0, 'background');
 
-        var animalDate = [
-            {key: 'chicken', text: 'CHICKEN'},
-            {key: 'horse', text: 'HORSE'},
-            {key: 'pig', text: 'PIG'},
-            {key: 'sheep', text: 'SHEEP'},
+        var animalData = [
+            {key:'chicken' , text:'CHICKEN'},
+            {key:'horse' , text:'HORSE'},
+            {key:'pig' , text:'PIG'},
+            {key:'sheep' , text:'SHEEP'}
         ];
 
-        this.background = this.game.add.sprite(0, 0, 'background');
-        // this.chicken = this.game.add.sprite(0, -50, 'chicken');
-        // this.horse = this.game.add.sprite(500, 200, 'horse');
-        // this.pig = this.game.add.sprite(300, 200, 'pig');
-        // this.sheep = this.game.add.sprite(100, 200, 'sheep');
+        this.animals = this.game.add.group();
 
-        // this.chicken.anchor.setTo(0);
-        // this.horse.anchor.setTo(0.5);
-        // this.pig.anchor.setTo(0.5);
-        // this.sheep.anchor.setTo(0.5);
-        //
-        // this.horse.scale.setTo(-1, 1);
-        // this.pig.scale.setTo(-0.8, 0.8);
-        // this.sheep.scale.setTo(-0.99, 0.99);
-        //
-        // this.sheep.angle = 90;
-        // this.chicken.angle = 45;
+        var self = this;
 
-        // Left Arrow
-        this.leftArrow = this.game.add.sprite(60, this.world.centerY, 'arrow');
+        animalData.forEach(function (element) {
+            animal = self.animals.create(-1000, self.game.world.centerY,element.key);
+            animal.customParams = {text: element.text};
+            animal.anchor.setTo(0.5);
+            animal.inputEnabled = true;
+            animal.input.pixelPerfectClick = true;
+            animal.events.onInputDown.add(self.animateAnimal, self);
+        });
+
+        this.currentAnimal = this.animals.next();
+        this.currentAnimal.position.set(this.game.world.centerX, this.world.centerY);
+
+        this.showText(this.currentAnimal);
+
+        this.leftArrow = this.game.add.sprite(60, this.game.world.centerY,'arrow');
         this.leftArrow.anchor.setTo(0.5);
-        this.leftArrow.scale.setTo(-1, 1);
+        this.leftArrow.scale.setTo(-1,1);
         this.leftArrow.inputEnabled = true;
-        this.leftArrow.customParams = (direction = 1);
-        // this.leftArrow.events.onInputDown.add(this.swithAnimal("teste", "teste"), this);
+        this.leftArrow.input.pixelPerfectClick = true;
+        this.leftArrow.events.onInputDown.add(this.switchAnimal,this);
 
-        // Right Arrow
-        this.rightArrow = this.game.add.sprite(580, this.world.centerY, 'arrow');
+        this.rightArrow = this.game.add.sprite(580, this.game.world.centerY,'arrow');
         this.rightArrow.anchor.setTo(0.5);
+        this.rightArrow.scale.setTo(1,1);
         this.rightArrow.inputEnabled = true;
-        this.rightArrow.customParams = (direction = -1);
-        // this.rightArrow.events.onInputDown.add(this.swithAnimal("teste", "teste"), this);
+        this.rightArrow.input.pixelPerfectClick = true;
+        this.rightArrow.events.onInputDown.add(this.switchAnimal,this);
 
-        // Interações
-        // this.pig.inputEnabled = true;
-        // this.pig.events.onInputDown.add(this.animateAnimal, this);
-        // this.pig.input.pixelPerfectClick = true;
+        this.leftArrow.customParams = {direction: 1};
+        this.rightArrow.customParams = {direction: -1};
     },
 
-    //atualizar
     update: function () {
-        // this.sheep.angle += 22;
-        // this.pig.angle -= 22;
+    },
 
-        if (this.isRotate) {
-            this.horse.angle -= 30;
+    animateAnimal: function () {
+        console.log('Clicou!');
+    },
+
+    showText: function(text) {
+        if(!this.animalText){
+            var style = {
+                font: 'bold 30pt Arial',
+                fill: 'D01718',
+                align: 'center'
+            };
+
+            this.animalText = this.game.add.text(this.game.width / 2, this.game.head * 0.15, '', style);
+            this.animalText.anchor.setTo(0.5);
         }
+
+        this.animalText.setText(animal.customParams.text);
+        this.animalText.visible = true;
     },
 
-    animateAnimal: function() {
-        this.isRotate = !this.isRotate;
-    },
+    switchAnimal: function (sprite, event) {
+        var newAnimal, endX;
 
-    swithAnimal: function(sprite, event) {
-        console.log(sprite);
+        this.animalText.visible = false;
+
+        if(this.isMoving) {
+            return;
+        }
+
+        this.isMoving = true;
+
+        if(sprite.customParams.direction > 0) {
+            newAnimal = this.animals.next();
+            newAnimal.x = - newAnimal.width / 2;
+            endX = this.game.width + this.currentAnimal.width / 2;
+        } else {
+            newAnimal = this.animals.previous();
+            newAnimal.x = this.game.width + newAnimal.width / 2;
+            endX = 0 - this.currentAnimal.width / 2;
+        }
+
+        var newAnimalMoviment = this.game.add.tween(newAnimal);
+        newAnimalMoviment.to({x:this.game.world.centerX}, 1000);
+        newAnimalMoviment.onComplete.add(function() {
+            this.isMoving = false;
+            this.showText(newAnimal);
+        }, this);
+
+        newAnimalMoviment.start();
+
+        var currentAnimalMoviment = this.game.add.tween(this.currentAnimal);
+        currentAnimalMoviment.to({x:endX}, 1000);
+        currentAnimalMoviment.start();
+
+        this.currentAnimal = newAnimal;
     }
 };
 
-var game = new Phaser.Game(640, 360, Phaser.AUTO);
+var game = new Phaser.Game(640,360,Phaser.AUTO);
 
-game.state.add('GameState', GameState);
+game.state.add('GameState',GameState);
 game.state.start('GameState');
