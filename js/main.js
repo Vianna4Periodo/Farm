@@ -8,11 +8,17 @@ var GameState = {
 
     preload: function () {
         this.load.image('background','assets/images/background.png');
-        this.load.image('chicken','assets/images/chicken.png');
-        this.load.image('horse','assets/images/horse.png');
-        this.load.image('pig','assets/images/pig.png');
-        this.load.image('sheep','assets/images/sheep.png');
-        this.load.image('arrow','assets/images/arrow.png')
+        this.load.image('arrow','assets/images/arrow.png');
+
+        // this.load.image('chicken','assets/images/chicken.png');
+        // this.load.image('horse','assets/images/horse.png');
+        // this.load.image('pig','assets/images/pig.png');
+        // this.load.image('sheep','assets/images/sheep.png');
+
+        this.load.spritesheet('chicken', 'assets/images/chicken_spritesheet.png', 131, 200, 3);
+        this.load.spritesheet('horse', 'assets/images/horse_spritesheet.png', 212, 200, 3);
+        this.load.spritesheet('pig', 'assets/images/pig_spritesheet.png', 297, 200, 3);
+        this.load.spritesheet('sheep', 'assets/images/sheep_spritesheet.png', 244, 200, 3);
     },
 
     create: function () {
@@ -31,6 +37,7 @@ var GameState = {
 
         animalData.forEach(function (element) {
             animal = self.animals.create(-1000, self.game.world.centerY,element.key);
+            animal.animations.add('animate', [0, 1, 2, 1, 0, 1], 3, false);
             animal.customParams = {text: element.text};
             animal.anchor.setTo(0.5);
             animal.inputEnabled = true;
@@ -64,11 +71,11 @@ var GameState = {
     update: function () {
     },
 
-    animateAnimal: function () {
-        console.log('Clicou!');
+    animateAnimal: function (sprite, event) {
+        sprite.play('animate');
     },
 
-    showText: function(text) {
+    showText: function(animal) {
         if(!this.animalText){
             var style = {
                 font: 'bold 30pt Arial',
@@ -76,7 +83,7 @@ var GameState = {
                 align: 'center'
             };
 
-            this.animalText = this.game.add.text(this.game.width / 2, this.game.head * 0.15, '', style);
+            this.animalText = this.game.add.text(this.game.width / 2, 40, '', style);
             this.animalText.anchor.setTo(0.5);
         }
 
@@ -110,6 +117,7 @@ var GameState = {
         newAnimalMoviment.onComplete.add(function() {
             this.isMoving = false;
             this.showText(newAnimal);
+            this.animateAnimal(newAnimal);
         }, this);
 
         newAnimalMoviment.start();
