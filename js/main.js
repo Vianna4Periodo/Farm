@@ -10,25 +10,25 @@ var GameState = {
         this.load.image('background','assets/images/background.png');
         this.load.image('arrow','assets/images/arrow.png');
 
-        // this.load.image('chicken','assets/images/chicken.png');
-        // this.load.image('horse','assets/images/horse.png');
-        // this.load.image('pig','assets/images/pig.png');
-        // this.load.image('sheep','assets/images/sheep.png');
-
         this.load.spritesheet('chicken', 'assets/images/chicken_spritesheet.png', 131, 200, 3);
         this.load.spritesheet('horse', 'assets/images/horse_spritesheet.png', 212, 200, 3);
         this.load.spritesheet('pig', 'assets/images/pig_spritesheet.png', 297, 200, 3);
         this.load.spritesheet('sheep', 'assets/images/sheep_spritesheet.png', 244, 200, 3);
+
+        this.load.audio('chickenSound', ['assets/audio/chicken.mp3', 'assets/audio/chicken.ogg']);
+        this.load.audio('horseSound', ['assets/audio/horse.mp3', 'assets/audio/horse.ogg']);
+        this.load.audio('pigSound', ['assets/audio/pig.mp3', 'assets/audio/pig.ogg']);
+        this.load.audio('sheepSound', ['assets/audio/sheep.mp3', 'assets/audio/sheep.ogg']);
     },
 
     create: function () {
         this.background = this.game.add.sprite(0, 0, 'background');
 
         var animalData = [
-            {key:'chicken' , text:'CHICKEN'},
-            {key:'horse' , text:'HORSE'},
-            {key:'pig' , text:'PIG'},
-            {key:'sheep' , text:'SHEEP'}
+            {key:'chicken' , text:'CHICKEN', audio: 'chickenSound'},
+            {key:'horse' , text:'HORSE', audio: 'horseSound'},
+            {key:'pig' , text:'PIG', audio: 'pigSound'},
+            {key:'sheep' , text:'SHEEP', audio: 'sheepSound'}
         ];
 
         this.animals = this.game.add.group();
@@ -38,7 +38,7 @@ var GameState = {
         animalData.forEach(function (element) {
             animal = self.animals.create(-1000, self.game.world.centerY,element.key);
             animal.animations.add('animate', [0, 1, 2, 1, 0, 1], 3, false);
-            animal.customParams = {text: element.text};
+            animal.customParams = {text: element.text, audio: self.game.add.audio(element.audio)};
             animal.anchor.setTo(0.5);
             animal.inputEnabled = true;
             animal.input.pixelPerfectClick = true;
@@ -73,6 +73,7 @@ var GameState = {
 
     animateAnimal: function (sprite, event) {
         sprite.play('animate');
+        sprite.customParams.audio.play();
     },
 
     showText: function(animal) {
